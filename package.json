@@ -1,7 +1,7 @@
 {
-  "name": "gtaw-chatlog-magician",
+  "name": "sg-chatlog-magician",
   "version": "1.0.0",
-  "description": "Convert GTA World chat logs into beautifully formatted images",
+  "description": "Convert Shinobi Gaiden chat logs into beautifully formatted images",
   "main": "index.html",
   "scripts": {
     "start": "npx http-server -p 8080 -o",
@@ -16,14 +16,14 @@
     "url": "https://github.com/blancoleopardo/gtaw-chatlog-magician"
   },
   "keywords": [
-    "gtaw",
-    "gta-world",
+    "shinobi-gaiden",
+    "sg",
     "chatlog",
     "roleplay",
     "image-converter",
     "screenshot-tool"
   ],
-  "author": "blancodagoat",
+  "author": "Remilia",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/blancoleopardo/gtaw-chatlog-magician/issues"

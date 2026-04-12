@@ -1,5 +1,5 @@
 /**
- * Comprehensive Error Logger for GTAW Chatlog Magician
+ * Comprehensive Error Logger for SG Chatlog Magician
  * Captures all errors, warnings, and important events for debugging
  */
 (function() {
@@ -305,7 +305,7 @@
 
     const report = [];
     report.push('═══════════════════════════════════════════════════════');
-    report.push('     GTAW CHATLOG MAGICIAN - ERROR REPORT');
+    report.push('     SG CHATLOG MAGICIAN - ERROR REPORT');
     report.push('═══════════════════════════════════════════════════════');
     report.push('');
     report.push('SESSION INFO:');
@@ -629,7 +629,7 @@
       ],
       timestamp: new Date().toISOString(),
       footer: {
-        text: 'GTAW Chatlog Magician Error Reporter'
+        text: 'SG Chatlog Magician Error Reporter'
       }
     };
 
@@ -650,7 +650,7 @@
       username: 'Bug Reporter',
       avatar_url: 'https://cdn.discordapp.com/embed/avatars/0.png',
       embeds: [embed],
-      content: '**GTAW Chatlog Magician - Error Report**\n\n```\n' + report.substring(0, 1800) + '\n...\n```'
+      content: '**SG Chatlog Magician - Error Report**\n\n```\n' + report.substring(0, 1800) + '\n...\n```'
     };
 
     return fetch(webhookUrl, {
