@@ -253,7 +253,7 @@ function downloadOutputImage() {
     showLoadingIndicator();
 
   const height = output.prop('scrollHeight') + 100;
-  const width = output.width();
+  const width = Math.max(output.width(), output.prop('scrollWidth'));
   const originalPadding = output.css('padding-bottom');
 
   output.css('padding-bottom', '100px');
@@ -293,7 +293,7 @@ function downloadOutputImage() {
   // Try with original output first
   if (typeof domtoimage === 'undefined') {
     console.error('domtoimage library not loaded');
-    alert('Image generation library not available. Please refresh the page and try again.');
+    alert('La librería de generación de imágenes no está disponible. Recarga la página e intenta de nuevo.');
     hideLoadingIndicator();
     if (hadColoringMode) output.addClass('coloring-mode');
     return;
@@ -328,7 +328,7 @@ function downloadOutputImage() {
       
       if (typeof domtoimage === 'undefined') {
         console.error('domtoimage library not loaded');
-        alert('Image generation library not available. Please refresh the page and try again.');
+        alert('La librería de generación de imágenes no está disponible. Recarga la página e intenta de nuevo.');
         hideLoadingIndicator();
         if (hadColoringMode) output.addClass('coloring-mode');
         return;
@@ -370,7 +370,7 @@ function downloadOutputImage() {
 
     img.onerror = function() {
       console.error("Error loading generated image");
-      alert("There was an error processing the generated image. Please try again.");
+      alert("Hubo un error al procesar la imagen generada. Inténtalo de nuevo.");
       hideLoadingIndicator();
       if (hadColoringMode) output.addClass('coloring-mode');
     };
@@ -380,12 +380,12 @@ function downloadOutputImage() {
     console.error("Error generating image:", error);
     
     // Provide more specific error messages
-    let errorMessage = "There was an error generating the image. Please try again.";
+    let errorMessage = "Hubo un error al generar la imagen. Inténtalo de nuevo.";
     
     if (error.message && error.message.includes('SecurityError')) {
-      errorMessage = "Unable to access external resources. The image may be generated without some styling.";
+      errorMessage = "No se pudo acceder a recursos externos. La imagen puede generarse sin algunos estilos.";
     } else if (error.message && error.message.includes('cssRules')) {
-      errorMessage = "Some external styles could not be loaded. The image will be generated with available styles.";
+      errorMessage = "Algunos estilos externos no pudieron cargarse. La imagen se generará con los estilos disponibles.";
     }
     
     alert(errorMessage);
@@ -402,7 +402,7 @@ function showLoadingIndicator() {
       <div id="loadingIndicator" class="loading-overlay">
         <div class="loading-dialog">
           <div class="spinner"></div>
-          <p class="loading-text">Generating image...</p>
+          <p class="loading-text">Generando imagen...</p>
         </div>
       </div>
     `);
@@ -420,7 +420,7 @@ function showAutoSaveIndicator() {
   $('.auto-save-indicator').remove();
   
   // Create and show new indicator
-  const indicator = $('<div class="auto-save-indicator">Settings saved</div>');
+  const indicator = $('<div class="auto-save-indicator">Ajustes guardados</div>');
   $('body').append(indicator);
   
   // Remove after 2 seconds
@@ -515,7 +515,7 @@ function showCopySuccess(button) {
   const originalBg = $btn.css("background-color");
   const originalText = $btn.text();
 
-  $btn.css("background-color", "#a8f0c6").text("Copied!");
+  $btn.css("background-color", "#a8f0c6").text("¡Copiado!");
 
   setTimeout(() => {
     $btn.css("background-color", originalBg).text(originalText);
@@ -527,7 +527,7 @@ function showCopyError(button) {
   const originalBg = $btn.css("background-color");
   const originalText = $btn.text();
 
-  $btn.css("background-color", "#f0a8a8").text("Failed!");
+  $btn.css("background-color", "#f0a8a8").text("¡Error!");
 
   setTimeout(() => {
     $btn.css("background-color", originalBg).text(originalText);
@@ -628,7 +628,7 @@ function toggleHistoryPanel() {
 
   const tab = document.querySelector('.history-tab');
   tab.setAttribute('aria-expanded', !isOpen);
-  tab.setAttribute('aria-label', isOpen ? 'Open chat history' : 'Close chat history');
+  tab.setAttribute('aria-label', isOpen ? 'Abrir historial de chatlogs' : 'Cerrar historial de chatlogs');
 
   // Hide/show the history tab when panel is open/closed
   if (!isOpen) {
@@ -667,7 +667,7 @@ document.addEventListener('click', (e) => {
  * @returns {void}
  */
 function clearHistory() {
-  if (confirm('Are you sure you want to clear all chat history?')) {
+  if (confirm('¿Estás seguro de que quieres borrar todo el historial?')) {
     localStorage.removeItem('chatlogHistory');
     refreshHistoryPanel();
   }
@@ -680,8 +680,8 @@ function clearHistory() {
  */
 function refreshHistoryPanel() {
   const $historyItems = $('.history-items');
-  const $loading = $('<div class="history-loading">Loading history...</div>');
-  const $empty = $('<div class="history-empty">No history items</div>');
+  const $loading = $('<div class="history-loading">Cargando historial...</div>');
+  const $empty = $('<div class="history-empty">Sin historial</div>');
 
   $historyItems.empty().append($loading.addClass('active'));
 
@@ -695,7 +695,7 @@ function refreshHistoryPanel() {
     }
 
     const $items = history.map((text, index) => {
-      const $item = $('<div class="history-item" role="button" tabindex="0" aria-label="Load chatlog from history"></div>');
+      const $item = $('<div class="history-item" role="button" tabindex="0" aria-label="Cargar chatlog del historial"></div>');
       $item.data('index', index);
 
       const $textContainer = $('<div class="history-item-text"></div>');
@@ -721,7 +721,7 @@ function refreshHistoryPanel() {
   } catch (e) {
     console.error('Error refreshing history panel:', e);
     $loading.removeClass('active');
-    $historyItems.append($('<div class="history-error">Error loading history</div>'));
+    $historyItems.append($('<div class="history-error">Error al cargar historial</div>'));
   }
 }
 
@@ -749,7 +749,7 @@ function toggleChangelogPanel() {
 
     const tab = document.querySelector('.changelog-tab');
     tab.setAttribute('aria-expanded', !isOpen);
-    tab.setAttribute('aria-label', isOpen ? 'Open changelog' : 'Close changelog');
+    tab.setAttribute('aria-label', isOpen ? 'Abrir changelog' : 'Cerrar changelog');
 
     if (!isOpen) {
         const firstItem = panel.querySelector('.changelog-item');
@@ -788,7 +788,7 @@ $(document).ready(function() {
     const dropdown = $('#characterNameDropdown');
     const list = getCharacterList();
     if (list.length === 0) {
-      dropdown.html('<div style="padding: 8px; color: #888;">No characters saved</div>');
+      dropdown.html('<div style="padding: 8px; color: #888;">No hay personajes guardados</div>');
       return;
     }
     dropdown.html(list.map(name =>
@@ -937,7 +937,7 @@ $(document).ready(function() {
     if (window.ErrorLogger) {
       window.ErrorLogger.sendReport();
     } else {
-      alert('Error logger not loaded. Please refresh the page and try again.');
+      alert('El sistema de errores no está cargado. Recarga la página e intenta de nuevo.');
     }
   });
 
@@ -975,7 +975,7 @@ $(document).ready(function() {
   });
 
   $('.history-header').append(
-    $('<button class="clear-history-btn" onclick="clearHistory()" aria-label="Clear all history">Clear All</button>')
+    $('<button class="clear-history-btn" onclick="clearHistory()" aria-label="Borrar todo el historial">Borrar Todo</button>')
   );
 
   // Add click-away functionality for changelog panel

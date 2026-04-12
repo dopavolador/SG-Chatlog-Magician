@@ -42,7 +42,7 @@ class Changelog {
         this.panel.classList.add('open');
         this.panel.setAttribute('aria-hidden', 'false');
         this.tab.setAttribute('aria-expanded', 'true');
-        this.tab.setAttribute('aria-label', 'Close changelog');
+        this.tab.setAttribute('aria-label', 'Cerrar changelog');
         
         // Reset pagination when opening panel
         this.currentPage = 1;
@@ -56,7 +56,7 @@ class Changelog {
         this.panel.classList.remove('open');
         this.panel.setAttribute('aria-hidden', 'true');
         this.tab.setAttribute('aria-expanded', 'false');
-        this.tab.setAttribute('aria-label', 'Open changelog');
+        this.tab.setAttribute('aria-label', 'Abrir changelog');
     }
 
     renderEntries() {
@@ -71,8 +71,8 @@ class Changelog {
         if (entriesToShow < totalEntries) {
             html += `
                 <div class="load-more-container">
-                    <button class="load-more-btn" aria-label="Load more changelog entries">
-                        Load More (${totalEntries - entriesToShow} remaining)
+                    <button class="load-more-btn" aria-label="Cargar más entradas del changelog">
+                        Cargar más (${totalEntries - entriesToShow} restantes)
                     </button>
                 </div>
             `;
@@ -88,7 +88,7 @@ class Changelog {
 
     createEntryElement(entry) {
         const date = new Date(entry.date);
-        const formattedDate = date.toLocaleDateString('en-US', {
+        const formattedDate = date.toLocaleDateString('es-ES', {
             year: 'numeric',
             month: 'long',
             day: 'numeric'

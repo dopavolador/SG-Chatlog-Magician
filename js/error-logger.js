@@ -509,10 +509,10 @@
     // Check rate limiting
     if (!checkRateLimit()) {
       showToast(
-        'Please wait before sending another report. Limit: ' + 
+        'Espera antes de enviar otro reporte. Límite: ' + 
         config.RATE_LIMIT.MAX_REPORTS_PER_SESSION + 
-        ' per session, ' + 
-        config.RATE_LIMIT.COOLDOWN_SECONDS + 's cooldown.',
+        ' por sesión, ' + 
+        config.RATE_LIMIT.COOLDOWN_SECONDS + 's de espera.',
         'warning',
         4000
       );
@@ -522,7 +522,7 @@
     const report = generateReport();
 
     // Show loading indicator
-    showLoadingIndicator('Sending bug report...');
+    showLoadingIndicator('Enviando reporte de bug...');
 
     // Try serverless function first (keeps webhook private)
     if (config.USE_SERVERLESS_PROXY) {
@@ -530,7 +530,7 @@
         .then(() => {
           hideLoadingIndicator();
           if (config.SHOW_SUCCESS_MESSAGE) {
-            showToast('Bug report sent successfully! Thank you!', 'success');
+            showToast('¡Reporte de bug enviado con éxito! ¡Gracias!', 'success');
           }
           updateRateLimit();
         })
@@ -546,7 +546,7 @@
         .then(() => {
           hideLoadingIndicator();
           if (config.SHOW_SUCCESS_MESSAGE) {
-            showToast('Bug report sent successfully! Thank you!', 'success');
+            showToast('¡Reporte de bug enviado con éxito! ¡Gracias!', 'success');
           }
           updateRateLimit();
         })
@@ -834,8 +834,8 @@
     `;
 
     content.innerHTML = `
-      <h2 style="margin-top: 0;">Error Report</h2>
-      <p>Copy this report and send it to the developer:</p>
+      <h2 style="margin-top: 0;">Reporte de Error</h2>
+      <p>Copia este reporte y envíaselo al desarrollador:</p>
       <textarea readonly style="
         width: 100%;
         height: 400px;
@@ -854,7 +854,7 @@
           border-radius: 4px;
           cursor: pointer;
           font-size: 14px;
-        ">Close</button>
+        ">Cerrar</button>
       </div>
     `;
 
@@ -881,7 +881,7 @@
    * Clears the error log
    */
   function clearLog() {
-    if (confirm('Are you sure you want to clear the error log?')) {
+    if (confirm('¿Estás seguro de que quieres borrar el registro de errores?')) {
       errorLog.errors = [];
       errorLog.warnings = [];
       errorLog.info = [];

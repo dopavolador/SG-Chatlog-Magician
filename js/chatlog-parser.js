@@ -30,26 +30,20 @@ $(document).ready(function() {
         applyBackground = !applyBackground;
         $output.toggleClass("background-active", applyBackground);
 
-        $toggleBackgroundBtn
-            .toggleClass("btn-dark", applyBackground)
-            .toggleClass("btn-outline-dark", !applyBackground);
+        $toggleBackgroundBtn.toggleClass("active", applyBackground);
 
         processOutput();
     }
 
     function toggleCensorship() {
         applyCensorship = !applyCensorship;
-        $toggleCensorshipBtn
-            .toggleClass("btn-dark", applyCensorship)
-            .toggleClass("btn-outline-dark", !applyCensorship);
+        $toggleCensorshipBtn.toggleClass("active", applyCensorship);
         processOutput();
     }
 
     function toggleCharacterNameColoring() {
         disableCharacterNameColoring = !disableCharacterNameColoring;
-        $toggleCharacterNameColoringBtn
-            .toggleClass("btn-dark", disableCharacterNameColoring)
-            .toggleClass("btn-outline-dark", !disableCharacterNameColoring);
+        $toggleCharacterNameColoringBtn.toggleClass("active", !disableCharacterNameColoring);
         processOutput();
     }
 
@@ -92,63 +86,30 @@ $(document).ready(function() {
         return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     }
 
+    // Regex para detectar verbos de habla en español
+    const SPEECH_VERB_PATTERN = /\b(dice|grita|susurra)\b/;
+    // Regex para extraer nombre del hablante y posible destinatario
+    // Formato: "Nombre dice: ..." o "Nombre dice a Destinatario: ..."
+    const SPEECH_LINE_PATTERN = /^(.+?)\s+(?:dice|grita|susurra)(?:\s+a\s+(.+?))?\s*:/;
+
     function formatSaysLine(line, currentCharacterName) {
         if (!currentCharacterName || disableCharacterNameColoring) {
             return wrapSpan("white", line);
         }
 
-        // Check if line starts with [!]
-        const hasExclamation = line.startsWith("[!]");
-        const lineWithoutExclamation = hasExclamation ? line.substring(3).trim() : line;
+        const match = line.match(SPEECH_LINE_PATTERN);
+        const speakerName = match ? match[1].trim().toLowerCase() : '';
+        const targetName = match && match[2] ? match[2].trim().toLowerCase() : '';
 
-        // Extract the speaker's name (before 'says')
-        const nameMatch = lineWithoutExclamation.match(/^([^:]+?)\s+says/);
-        const speakerName = nameMatch ? nameMatch[1].trim().toLowerCase() : '';
-
-        // Check if the line contains (to CharacterName) format
-        const toSectionPattern = /\(to [^)]+\)/i;
-        const hasToSection = toSectionPattern.test(lineWithoutExclamation);
-        
-        // Determine the color for the main content
         let mainColor;
-        if (hasToSection) {
-            // Extract the target name from (to CharacterName)
-            const toSectionMatch = lineWithoutExclamation.match(toSectionPattern);
-            const targetName = toSectionMatch ? toSectionMatch[0].match(/\(to ([^)]+)\)/i)[1].toLowerCase() : '';
-            
-            // If the target is the current character, color as white (directed at you)
+        if (targetName) {
             if (targetName === currentCharacterName.toLowerCase()) {
                 mainColor = "white";
             } else {
-                // If speaker is the current character, color as white, otherwise lightgrey
                 mainColor = (speakerName === currentCharacterName.toLowerCase()) ? "white" : "lightgrey";
             }
         } else {
-            // No (to CharacterName) format, check if speaker is the current character
-            if (speakerName === currentCharacterName.toLowerCase()) {
-                mainColor = "white";
-            } else {
-                mainColor = "lightgrey";
-            }
-        }
-
-        // If line has [!], format it specially
-        if (hasExclamation) {
-            // For [!] lines, we need to handle the coloring differently
-            // to avoid the wrapSpan function breaking down the HTML
-            const restOfLine = lineWithoutExclamation;
-            // Return HTML that won't be processed by makeTextColorable
-            // Sanitize user input to prevent XSS
-            const sanitizedRestOfLine = restOfLine.replace(/[<>&"']/g, function(match) {
-                return {
-                    '<': '&lt;',
-                    '>': '&gt;',
-                    '&': '&amp;',
-                    '"': '&quot;',
-                    "'": '&#x27;'
-                }[match];
-            });
-            return `<span class="fail colorable">[!]</span> <span class="${mainColor} colorable">${sanitizedRestOfLine}</span>`;
+            mainColor = (speakerName === currentCharacterName.toLowerCase()) ? "white" : "lightgrey";
         }
 
         return wrapSpan(mainColor, line);
@@ -185,65 +146,10 @@ $(document).ready(function() {
 
         chatLines.forEach((line) => {
 
-            if (line.includes("Use F2 to re-enable the chat and use F3 to activate the cursor. You can also use /pc for the cursor.")) {
-                return;
-            }
-
             const div = document.createElement("div");
             div.className = "generated";
 
-            // Check if this is a [!] line first, before any other processing
-            if (line.startsWith("[!]")) {
-                const currentCharacterName = $("#characterNameInput").val().toLowerCase().trim();
-                const lineWithoutExclamation = line.substring(3).trim();
-                
-                // Extract the speaker's name (before 'says')
-                const nameMatch = lineWithoutExclamation.match(/^([^:]+?)\s+says/);
-                const speakerName = nameMatch ? nameMatch[1].trim().toLowerCase() : '';
-                
-                // Check if the line contains (to CharacterName) format
-                const toSectionPattern = /\(to [^)]+\)/i;
-                const hasToSection = toSectionPattern.test(lineWithoutExclamation);
-                
-                // Determine the color for the main content
-                let mainColor;
-                if (hasToSection) {
-                    // Extract the target name from (to CharacterName)
-                    const toSectionMatch = lineWithoutExclamation.match(toSectionPattern);
-                    const targetName = toSectionMatch ? toSectionMatch[0].match(/\(to ([^)]+)\)/i)[1].toLowerCase() : '';
-                    
-                    // If the target is the current character, color as white (directed at you)
-                    if (targetName === currentCharacterName) {
-                        mainColor = "white";
-                    } else {
-                        // If speaker is the current character, color as white, otherwise lightgrey
-                        mainColor = (speakerName === currentCharacterName) ? "white" : "lightgrey";
-                    }
-                } else {
-                    // No (to CharacterName) format, check if speaker is the current character
-                    if (speakerName === currentCharacterName) {
-                        mainColor = "white";
-                    } else {
-                        mainColor = "lightgrey";
-                    }
-                }
-                
-                // Create the properly formatted HTML for [!] lines and apply line breaks
-                // Add colorable class to make spans selectable for letter-by-letter coloring
-                // Sanitize user input to prevent XSS
-                const sanitizedLine = lineWithoutExclamation.replace(/[<>&"']/g, function(match) {
-                    return {
-                        '<': '&lt;',
-                        '>': '&gt;',
-                        '&': '&amp;',
-                        '"': '&quot;',
-                        "'": '&#x27;'
-                    }[match];
-                });
-                const formattedHTML = `<span class="fail colorable">[!]</span> <span class="${mainColor} colorable">${sanitizedLine}</span>`;
-                div.innerHTML = addLineBreaksAndHandleSpans(formattedHTML);
-                // Don't add no-colorable class since we want these spans to be colorable
-            } else {
+            {
                 let formattedLine = formatLineWithFilter(line);
 
                 // Apply censorship after formatting to catch plain lines
@@ -437,43 +343,9 @@ $(document).ready(function() {
         }
 
         const currentCharacterName = $("#characterNameInput").val().toLowerCase().trim();
-        // Only apply character-name based says coloring when the line actually contains a "says" pattern
-        if (currentCharacterName && currentCharacterName !== "" && /\bsays\b/.test(lowerLine)) {
-            // Remove [!] if present for name detection
-            const lineWithoutExclamation = cleanLine.replace(/^\[!\]\s*/, '');
-            
-            // Extract the name before "says" and check if it matches the character name
-            const nameMatch = lineWithoutExclamation.match(/^([^:]+?)\s+says/);
-            const speakerName = nameMatch ? nameMatch[1].trim().toLowerCase() : '';
-            
-            // Check if the line contains (to CharacterName) format
-            const toSectionPattern = /\(to [^)]+\)/i;
-            const hasToSection = toSectionPattern.test(lineWithoutExclamation);
-            
-            // Determine the color based on speaker and target
-            let mainColor;
-            if (hasToSection) {
-                // Extract the target name from (to CharacterName)
-                const toSectionMatch = lineWithoutExclamation.match(toSectionPattern);
-                const targetName = toSectionMatch ? toSectionMatch[0].match(/\(to ([^)]+)\)/i)[1].toLowerCase() : '';
-                
-                // If the target is the current character, color as white (directed at you)
-                if (targetName === currentCharacterName) {
-                    mainColor = "white";
-                } else {
-                    // If speaker is the current character, color as white, otherwise lightgrey
-                    mainColor = (speakerName === currentCharacterName) ? "white" : "lightgrey";
-                }
-            } else {
-                // No (to CharacterName) format, check if speaker is the current character
-                if (speakerName === currentCharacterName) {
-                    mainColor = "white";
-                } else {
-                    mainColor = "lightgrey";
-                }
-            }
-            
-            return wrapSpan(mainColor, line);
+        // Detectar líneas de diálogo en español (dice, grita, susurra)
+        if (currentCharacterName && currentCharacterName !== "" && SPEECH_VERB_PATTERN.test(lowerLine)) {
+            return formatSaysLine(cleanLine, currentCharacterName);
         }
 
         return formatLine(line);
@@ -508,43 +380,6 @@ $(document).ready(function() {
     }
 
     function formatLine(line) {
-        const lowerLine = line.toLowerCase();
-
-        if (line.includes("Equipped Weapons")) {
-            return wrapSpan("green", line);
-        }
-
-
-
-        if (lowerLine.includes("was seized by")) {
-            return wrapSpan("death", line);
-        }
-
-        if (line.match(/\|------ .+'s Items \d{2}\/[A-Z]{3}\/\d{4} - \d{2}:\d{2}:\d{2} ------\|/)) {
-            return wrapSpan("green", line);
-        }
-
-
-
-        if (line.match(/^(?:\[\d{2}:\d{2}:\d{2}\]\s+)?\d+: .+/)) {
-            if (line.includes("PH:")) {
-                const phoneMatch = line.trim().match(/^(\d+: .+? x\d+ \(.+?\) -) (PH: \d+)$/);
-                if (phoneMatch) {
-                    const [_, itemPart, phonePart] = phoneMatch;
-                    return wrapSpan("yellow", itemPart) + " " + wrapSpan("green", phonePart);
-                }
-            }
-
-            if (line.includes("Money ($")) {
-                const moneyMatch = line.match(/^(\d+: Money \()(\$\d+(?:,\d{3})*)(\) \(\d+g\))$/);
-                if (moneyMatch) {
-                    const [_, prefix, amount, suffix] = moneyMatch;
-                    return wrapSpan("yellow", prefix) + wrapSpan("green", amount) + wrapSpan("yellow", suffix);
-                }
-            }
-            return wrapSpan("yellow", line);
-        }
-
         return replaceColorCodes(line);
     }
 
@@ -1122,25 +957,10 @@ $(document).ready(function() {
     }
 
     function addLineBreaksAndHandleSpans(text) {
-        const maxLineLength = document.getElementById("lineLengthInput").value;
-        const currentFontSize = parseInt($('#font-label').val()) || 12;
+        const maxLineLength = parseInt(document.getElementById("lineLengthInput").value) || 77;
         let result = "";
         let currentLineLength = 0;
         const openSpans = [];
-
-        // Calculate font size adjustment factor for better line breaking
-        // This compensates for the fact that larger fonts take up more visual space
-        // We use a dynamic calculation to handle unlimited font sizes
-        let fontSizeAdjustment;
-        if (currentFontSize <= 12) {
-            fontSizeAdjustment = 1.0; // No adjustment needed for 12px and below
-        } else {
-            // Dynamic calculation for larger fonts
-            // Use a logarithmic approach to handle very large font sizes gracefully
-            fontSizeAdjustment = Math.max(0.3, Math.min(1.0, 12 / currentFontSize));
-        }
-        
-        const adjustedMaxLineLength = Math.floor(maxLineLength * fontSizeAdjustment);
         
 
 
@@ -1182,7 +1002,7 @@ $(document).ready(function() {
                 result += text[i];
                 currentLineLength++;
 
-                if (currentLineLength >= adjustedMaxLineLength && text[i] === " ") {
+                if (currentLineLength >= maxLineLength && text[i] === " ") {
                     addLineBreak();
                 }
             }

@@ -123,7 +123,7 @@
             document.body.style.msUserSelect = 'none';
 
             // Replace blocking alert with non-blocking toast
-            showToast("Coloring mode: Click words to select. Ctrl+click or drag for multi-select. Click the button again to exit.");
+            showToast("Modo colorear: Haz clic en palabras para seleccionar. Ctrl+clic o arrastra para selección múltiple. Haz clic en el botón de nuevo para salir.");
 
             setTimeout(function() {
                 makeTextColorable();
@@ -288,7 +288,7 @@
 
     function updateSelectionCounter() {
         const count = selectedElements.length;
-        $('.selection-counter').text(count + ' selected');
+        $('.selection-counter').text(count + ' seleccionados');
     }
 
     function handleGlobalMouseUp(e) {
@@ -320,9 +320,8 @@
     }
 
     const COLOR_CLASSES = [
-        'me', 'ame', 'darkgrey', 'grey', 'lightgrey', 'death', 'yellow',
-        'green', 'orange', 'blue', 'white', 'radioColor', 'radioColor2',
-        'do', 'success', 'fail'
+        'me', 'do', 'white', 'lightgrey',
+        'success', 'fail'
     ];
 
     function applyColorToSelection(e) {
@@ -351,7 +350,7 @@
         $('.color-applied-feedback').remove();
         
         // Create feedback element
-        const feedback = $(`<div class="color-applied-feedback">Applied ${colorClass}</div>`);
+        const feedback = $(`<div class="color-applied-feedback">${colorClass} aplicado</div>`);
         $('body').append(feedback);
         
         // Remove after configured duration
