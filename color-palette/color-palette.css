@@ -98,6 +98,33 @@
 
 .color-item:hover { transform: scale(1.12); box-shadow: 0 0 16px 0 currentColor, 0 0 2px 1px rgba(255,255,255,0.15); }
 .color-item.is-selected { animation: ringPulse 2s var(--ease-spring) infinite; }
+
+/* Custom color picker item */
+.color-item.custom-color-wrapper {
+    position: relative;
+    background: conic-gradient(
+        red, yellow, lime, aqua, blue, magenta, red
+    );
+    overflow: hidden;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.color-item.custom-color-wrapper input[type="color"] {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+    border: none;
+    padding: 0;
+    margin: 0;
+}
+
+.color-item.custom-color-wrapper:hover {
+    border-color: rgba(255, 255, 255, 0.6);
+}
+
 @keyframes ringPulse { 0%{ box-shadow:0 0 0 0 currentColor } 70%{ box-shadow:0 0 0 8px rgba(255,255,255,0) } 100%{ box-shadow:0 0 0 0 rgba(255,255,255,0) } }
 
 /* Color classes matching modern.css variables */

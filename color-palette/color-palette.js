@@ -34,8 +34,19 @@
         $toggleColorPaletteBtn = $("#toggleColorPalette");
 
         $toggleColorPaletteBtn.off('click.colorPalette').on('click.colorPalette', toggleColoringMode);
-        $colorPalette.off('click.colorPalette').on("click.colorPalette", ".color-item", applyColorToSelection);
+        $colorPalette.off('click.colorPalette').on("click.colorPalette", ".color-item:not(.custom-color-wrapper)", applyColorToSelection);
         $output.off('click.colorPalette').on("click.colorPalette", ".colorable", handleTextElementClick);
+
+        // Custom color picker
+        $('#customColorPicker').off('input.colorPalette').on('input.colorPalette', function() {
+            const hex = $(this).val();
+            $(this).closest('.custom-color-wrapper').css('background', hex);
+        });
+        $('#customColorPicker').off('change.colorPalette').on('change.colorPalette', function() {
+            if (!coloringMode || selectedElements.length === 0) return;
+            const hex = $(this).val();
+            applyCustomColorToSelection(hex);
+        });
         $output.off('mousedown.colorPalette').on("mousedown.colorPalette", ".colorable", handleDragStart);
         $output.off('mouseup.colorPalette').on("mouseup.colorPalette", ".colorable", handleDragEnd);
         $output.off('mouseover.colorPalette').on("mouseover.colorPalette", ".colorable", handleDragOver);
@@ -321,7 +332,7 @@
 
     const COLOR_CLASSES = [
         'me', 'do', 'white', 'lightgrey',
-        'success', 'fail'
+        'success', 'fail', 'radioColor'
     ];
 
     function applyColorToSelection(e) {
@@ -337,12 +348,26 @@
         selectedElements.forEach(element => {
             $(element)
                 .removeClass(COLOR_CLASSES.join(' '))
+                .css('color', '')
                 .addClass('colorable')
                 .addClass(colorClass);
         });
         
         // Show brief feedback
         showColorAppliedFeedback(colorClass);
+    }
+
+    function applyCustomColorToSelection(hex) {
+        if (!coloringMode || selectedElements.length === 0) return;
+
+        selectedElements.forEach(element => {
+            $(element)
+                .removeClass(COLOR_CLASSES.join(' '))
+                .addClass('colorable')
+                .css('color', hex);
+        });
+
+        showColorAppliedFeedback(hex);
     }
 
     function showColorAppliedFeedback(colorClass) {
@@ -404,6 +429,7 @@
         $(document).off('mouseup.colorPalette');
         $(document).off('keydown.colorPalette');
         $output.off('selectstart.colorPalette');
+        $('#customColorPicker').off('input.colorPalette change.colorPalette');
         $(document).off('click.closePalette');
         $(window).off('resize.colorPalette');
         

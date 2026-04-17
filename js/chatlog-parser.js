@@ -370,7 +370,12 @@ $(document).ready(function() {
             return wrapSpan("do", line);
         }
 
-        // 4) /me — comienza con "*"
+        // 4) ** Radio — línea de radio
+        if (trimmed.startsWith("** Radio")) {
+            return wrapSpan("radioColor", line);
+        }
+
+        // 5) /me — comienza con "*"
         if (trimmed.startsWith("*")) {
             return wrapSpan("me", line);
         }
