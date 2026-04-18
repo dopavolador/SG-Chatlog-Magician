@@ -140,9 +140,9 @@
     var valSpan = document.getElementById(valId);
     if (!input) return;
     input.addEventListener('input', function() {
-      var v = parseInt(this.value);
+      var v = parseFloat(this.value);
       setter(v);
-      if (valSpan) valSpan.textContent = v + suffix;
+      if (valSpan) valSpan.textContent = (v % 1 === 0 ? v : v.toFixed(1)) + suffix;
       updateLivePreview();
     });
   }
@@ -330,6 +330,12 @@
         chatlogEl.style.fontSize = computedFontSize;
       }
 
+      // Copy line-height so spacing matches exactly
+      var computedLineHeight = window.getComputedStyle(output).lineHeight;
+      if (computedLineHeight) {
+        chatlogEl.style.lineHeight = computedLineHeight;
+      }
+
       // Force fully transparent background — no blur, no rgba
       chatlogEl.style.backgroundColor = 'transparent';
       chatlogEl.style.backdropFilter = 'none';
@@ -344,10 +350,10 @@
     // relative to the export resolution (same as pasting a screenshot in Photoshop)
     var finalScale = previewRatio * (state.scale / 100);
 
-    // Left-aligned positioning: posX% from left edge, posY% centers vertically
+    // Left-aligned positioning: posX% from left edge, posY% from top edge, grows downward
     chatlogEl.style.left = state.posX + '%';
     chatlogEl.style.top = state.posY + '%';
-    chatlogEl.style.transform = 'translate(0, -50%) scale(' + finalScale + ')';
+    chatlogEl.style.transform = 'scale(' + finalScale + ')';
     chatlogEl.style.transformOrigin = 'top left';
 
     // Frame bars (always top/bottom)
@@ -389,14 +395,19 @@
     var renderScale = cropW / previewW;
 
     var opts = {
-      bgcolor: '#000000',
+      bgcolor: 'transparent',
       width: Math.round(cropW),
       height: Math.round(cropH),
+      quality: 1.0,
       style: {
         transform: 'scale(' + renderScale + ')',
-        transformOrigin: 'top left'
+        transformOrigin: 'top left',
+        background: 'transparent'
       },
+      // Skip the <img> bg and bars — we'll draw them natively in canvas
       filter: function(node) {
+        if (node.id === 'cinemaLivePreviewBg') return false;
+        if (node.id === 'cinemaLiveBarTop' || node.id === 'cinemaLiveBarBottom') return false;
         if (node.tagName === 'LINK' && node.href &&
             (node.href.includes('cdnjs.cloudflare.com') || node.href.includes('fonts.googleapis.com'))) {
           return false;
@@ -405,14 +416,51 @@
       }
     };
 
-    domtoimage.toPng(livePreview, opts).then(function(dataUrl) {
-      var a = document.createElement('a');
-      a.href = dataUrl;
-      a.download = generateCinemaFilename();
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      hideLoadingIndicator();
+    // First render chatlog + bars overlay (without the bg image) via domtoimage
+    domtoimage.toPng(livePreview, opts).then(function(overlayUrl) {
+      // Composite: draw bg image at native crop resolution, then overlay on top
+      var canvas = document.createElement('canvas');
+      canvas.width = Math.round(cropW);
+      canvas.height = Math.round(cropH);
+      var ctx = canvas.getContext('2d');
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
+
+      // Draw background image cropped at native resolution (no double interpolation)
+      var maxShiftX = natW - cropW;
+      var maxShiftY = natH - cropH;
+      var srcX = (state.cropOffsetX / 100) * maxShiftX;
+      var srcY = (state.cropOffsetY / 100) * maxShiftY;
+      ctx.drawImage(bgImage, srcX, srcY, cropW, cropH, 0, 0, cropW, cropH);
+
+      // Draw the overlay (chatlog only) on top
+      var overlayImg = new Image();
+      overlayImg.onload = function() {
+        ctx.drawImage(overlayImg, 0, 0, cropW, cropH);
+
+        // Draw frame bars natively on canvas (pixel-perfect, no gaps)
+        var barFrac = FRAME_PRESETS[state.frame];
+        if (barFrac) {
+          var barH = Math.round(barFrac * cropH);
+          ctx.fillStyle = '#000000';
+          ctx.fillRect(0, 0, cropW, barH);
+          ctx.fillRect(0, cropH - barH, cropW, barH);
+        }
+
+        var finalUrl = canvas.toDataURL('image/png');
+        var a = document.createElement('a');
+        a.href = finalUrl;
+        a.download = generateCinemaFilename();
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        hideLoadingIndicator();
+      };
+      overlayImg.onerror = function() {
+        hideLoadingIndicator();
+        alert('Error al componer la imagen final.');
+      };
+      overlayImg.src = overlayUrl;
     }).catch(function(err) {
       hideLoadingIndicator();
       alert('Error al exportar: ' + (err.message || err));

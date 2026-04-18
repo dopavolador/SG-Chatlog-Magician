@@ -1487,6 +1487,7 @@ html::-webkit-scrollbar {
 	top: 0;
 	left: 0;
 	display: block;
+	image-rendering: high-quality;
 }
 
 .cinema-live-chatlog {
@@ -1502,11 +1503,12 @@ html::-webkit-scrollbar {
 	padding: 0 !important;
 	border-radius: 0 !important;
 	transition: none !important;
-	line-height: 1.2 !important;
+	text-rendering: geometricPrecision;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
 }
 
 .cinema-live-chatlog .generated {
-	line-height: 1.2 !important;
 	margin-bottom: 0 !important;
 	padding-top: 0 !important;
 	padding-bottom: 0 !important;
@@ -1524,10 +1526,11 @@ html::-webkit-scrollbar {
 .cinema-live-bar {
 	position: absolute;
 	left: 0;
-	right: 0;
+	width: 100%;
 	background: #000;
 	pointer-events: none;
 	transition: height 0.15s ease, opacity 0.15s ease;
+	z-index: 2;
 }
 
 .cinema-live-bar-top {
