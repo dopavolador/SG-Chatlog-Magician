@@ -105,7 +105,113 @@
                     <button id="toggleColorPalette" class="button" aria-label="Alternar paleta de colores" title="Clic en texto para colorear">Colorear</button>
                  </div>
               </div>
+
               <div id="output" class="output" role="region" aria-label="Chatlog formateado"></div>
+
+              <!-- Crear Imagen: composición con imagen de fondo y marcos cinematográficos -->
+              <div class="cinema-composer-section">
+                <div class="cinema-composer-header" role="button" tabindex="0" aria-expanded="false" aria-controls="cinemaComposerBody">
+                  <i class="fas fa-image" aria-hidden="true"></i> Crear Imagen
+                  <span class="cinema-toggle-icon"><i class="fas fa-chevron-down"></i></span>
+                </div>
+                <div id="cinemaComposerBody" class="cinema-composer-body" style="display: none;">
+                  <div class="grid-x grid-margin-x align-middle">
+                    <!-- Imagen de fondo -->
+                    <div class="cell small-12 medium-6">
+                      <div class="cinema-group">
+                        <h4><i class="fas fa-image"></i> Imagen de Fondo</h4>
+                        <input type="file" id="bgImageInput" accept="image/*" style="display:none" />
+                        <button id="bgImageBtn" class="button" type="button" aria-label="Importar imagen de fondo">
+                          <i class="fas fa-upload"></i> Importar Imagen
+                        </button>
+                        <button id="bgImageClearBtn" class="button alert small" type="button" style="display:none" aria-label="Quitar imagen de fondo">
+                          <i class="fas fa-times"></i> Quitar
+                        </button>
+                      </div>
+                    </div>
+
+                    <!-- Posición del chatlog -->
+                    <div class="cell small-12 medium-6">
+                      <div class="cinema-group">
+                        <h4><i class="fas fa-arrows-alt"></i> Posición del Chatlog</h4>
+                        <div class="cinema-control">
+                          <label for="chatlogPosX">Horizontal (X):</label>
+                          <input type="range" id="chatlogPosX" min="0" max="100" value="5" aria-label="Posición horizontal del chatlog" />
+                          <span id="chatlogPosXVal" class="range-val">5%</span>
+                        </div>
+                        <div class="cinema-control">
+                          <label for="chatlogPosY">Vertical (Y):</label>
+                          <input type="range" id="chatlogPosY" min="0" max="100" value="50" aria-label="Posición vertical del chatlog" />
+                          <span id="chatlogPosYVal" class="range-val">50%</span>
+                        </div>
+                        <div class="cinema-control">
+                          <label for="chatlogScale">Escala:</label>
+                          <input type="range" id="chatlogScale" min="10" max="200" value="100" aria-label="Escala del chatlog" />
+                          <span id="chatlogScaleVal" class="range-val">100%</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Recorte de imagen -->
+                    <div class="cell small-12 medium-6">
+                      <div class="cinema-group">
+                        <h4><i class="fas fa-crop-alt"></i> Recorte de Imagen</h4>
+                        <div class="cinema-control cinema-crop-resolution">
+                          <label>Resolución:</label>
+                          <input type="number" id="cropWidth" min="100" max="7680" value="1920" class="cinema-crop-input" aria-label="Ancho del recorte" />
+                          <span class="cinema-crop-x">&times;</span>
+                          <input type="number" id="cropHeight" min="100" max="4320" value="1080" class="cinema-crop-input" aria-label="Alto del recorte" />
+                          <span class="range-val">px</span>
+                          <button id="cropResetBtn" class="cinema-crop-reset-btn" type="button" aria-label="Usar resolución original" title="Restaurar resolución original">
+                            <i class="fas fa-undo"></i>
+                          </button>
+                        </div>
+                        <div class="cinema-control">
+                          <label for="cropOffsetY">Pos. vertical:</label>
+                          <input type="range" id="cropOffsetY" min="0" max="100" value="50" aria-label="Posición vertical de la imagen dentro del recorte" />
+                          <span id="cropOffsetYVal" class="range-val">50%</span>
+                        </div>
+                        <div class="cinema-control">
+                          <label for="cropOffsetX">Pos. horizontal:</label>
+                          <input type="range" id="cropOffsetX" min="0" max="100" value="50" aria-label="Posición horizontal de la imagen dentro del recorte" />
+                          <span id="cropOffsetXVal" class="range-val">50%</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Marco cinematográfico -->
+                    <div class="cell small-12 medium-6">
+                      <div class="cinema-group">
+                        <h4><i class="fas fa-border-all"></i> Marco Cinematográfico</h4>
+                        <div class="cinema-frame-presets">
+                          <button class="cinema-frame-btn active" data-frame="none" title="Sin marco">Ninguno</button>
+                          <button class="cinema-frame-btn" data-frame="letterbox-239" title="Letterbox 2.39:1 (Scope)">2.39:1</button>
+                          <button class="cinema-frame-btn" data-frame="letterbox-185" title="Letterbox 1.85:1 (Flat)">1.85:1</button>
+                          <button class="cinema-frame-btn" data-frame="letterbox-21" title="Letterbox 2.1:1 (IMAX)">2.1:1</button>
+                          <button class="cinema-frame-btn" data-frame="4-3" title="4:3 Pillarbox (Clásico)">4:3</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Preview compuesto (HTML en vivo) -->
+                  <div class="cinema-preview-container" id="cinemaPreviewContainer" style="display:none;">
+                    <h4><i class="fas fa-eye"></i> Vista Previa</h4>
+                    <div id="cinemaLivePreview" class="cinema-live-preview">
+                      <img id="cinemaLivePreviewBg" class="cinema-live-bg" alt="" />
+                      <div id="cinemaLivePreviewChatlog" class="cinema-live-chatlog"></div>
+                      <div id="cinemaLiveBarTop" class="cinema-live-bar cinema-live-bar-top"></div>
+                      <div id="cinemaLiveBarBottom" class="cinema-live-bar cinema-live-bar-bottom"></div>
+                    </div>
+                  </div>
+
+                  <div class="cinema-actions">
+                    <button id="cinemaExportBtn" class="button success large" type="button" disabled aria-label="Exportar imagen">
+                      <i class="fas fa-download"></i> Exportar Imagen
+                    </button>
+                  </div>
+                </div>
+              </div>
            </div>
         </div>
      </div>
@@ -136,6 +242,7 @@
      <script src="color-palette/color-palette.js" defer></script>
      <script src="js/chatlog-parser.js" defer></script>
      <script src="js/app.js" defer></script>
+     <script src="js/cinema-composer.js" defer></script>
 
      <!-- History panel -->
      <div class="history-tab" 

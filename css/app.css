@@ -377,6 +377,8 @@ html::-webkit-scrollbar {
 }
 
 .button:hover { transform: translateY(-2px) scale(1.03); box-shadow: var(--elev-2); background: rgba(255,255,255,0.18); }
+.button.active { background-color: #1779ba; color: #fff; box-shadow: 0 0 8px rgba(23, 121, 186, 0.5); }
+.button.active:hover { background-color: #14679e; box-shadow: 0 0 12px rgba(23, 121, 186, 0.6); }
 .button:active { transform: scale(0.98); transition-duration: var(--dur-press); }
 .button:focus-visible { outline: 0; box-shadow: 0 0 0 3px rgba(34,211,238,0.4), var(--elev-2); }
 
@@ -385,8 +387,13 @@ html::-webkit-scrollbar {
 }
 
 .button:focus {
+	background-color: rgba(255,255,255,0.08);
 	outline: 2px solid rgba(255, 165, 0, 0.3);
 	outline-offset: 2px;
+}
+
+.button.active:focus {
+	background-color: #1779ba;
 }
 
 .button:active {
@@ -614,6 +621,10 @@ html::-webkit-scrollbar {
 
 .colorable {
 	display: inline;
+}
+
+#output.no-name-coloring .lightgrey {
+	color: #f1f1f1;
 }
 
 /* Removed styling for .colorable.unrecognized to prevent different appearance */
@@ -1212,5 +1223,358 @@ html::-webkit-scrollbar {
 
 	.changelog-content {
 		font-size: 12px;
+	}
+}
+
+/* ==========================================
+   Cinema Composer — Background & Frame System
+   ========================================== */
+
+.cinema-composer-section {
+	margin-top: 16px;
+	margin-bottom: 16px;
+	border-radius: 10px;
+	background: rgba(255, 255, 255, 0.04);
+	border: 1px solid rgba(255, 255, 255, 0.08);
+	overflow: hidden;
+}
+
+.cinema-composer-header {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 12px 16px;
+	cursor: pointer;
+	color: var(--text);
+	font-size: 15px;
+	font-weight: 600;
+	user-select: none;
+	transition: background var(--dur-hover) var(--ease-hover);
+}
+
+.cinema-composer-header:hover {
+	background: rgba(255, 255, 255, 0.06);
+}
+
+.cinema-composer-header .cinema-toggle-icon {
+	margin-left: auto;
+	transition: transform 0.3s var(--ease-spring);
+}
+
+.cinema-composer-header[aria-expanded="true"] .cinema-toggle-icon {
+	transform: rotate(180deg);
+}
+
+.cinema-composer-body {
+	padding: 16px;
+	border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.cinema-group {
+	background: rgba(0, 0, 0, 0.2);
+	border-radius: 8px;
+	padding: 14px;
+	margin-bottom: 12px;
+}
+
+.cinema-group h4 {
+	color: var(--accent);
+	font-size: 13px;
+	font-weight: 600;
+	margin: 0 0 10px 0;
+	display: flex;
+	align-items: center;
+	gap: 6px;
+}
+
+.cinema-control {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin-bottom: 8px;
+}
+
+.cinema-control label {
+	display: inline-block !important;
+	color: var(--muted);
+	font-size: 12px;
+	min-width: 120px;
+	white-space: nowrap;
+}
+
+.cinema-control input[type="range"] {
+	flex: 1;
+	height: 6px;
+	-webkit-appearance: none;
+	appearance: none;
+	background: rgba(255, 255, 255, 0.1);
+	border-radius: 3px;
+	outline: none;
+}
+
+.cinema-control input[type="range"]::-webkit-slider-thumb {
+	-webkit-appearance: none;
+	appearance: none;
+	width: 16px;
+	height: 16px;
+	border-radius: 50%;
+	background: var(--primary);
+	cursor: pointer;
+	box-shadow: 0 0 6px rgba(56, 150, 243, 0.4);
+}
+
+.cinema-control input[type="range"]::-moz-range-thumb {
+	width: 16px;
+	height: 16px;
+	border-radius: 50%;
+	background: var(--primary);
+	cursor: pointer;
+	border: none;
+}
+
+.cinema-control input[type="color"] {
+	width: 36px;
+	height: 28px;
+	border: 1px solid rgba(255, 255, 255, 0.15);
+	border-radius: 4px;
+	background: transparent;
+	cursor: pointer;
+	padding: 2px;
+}
+
+.range-val {
+	color: var(--text);
+	font-size: 12px;
+	min-width: 40px;
+	text-align: right;
+	font-variant-numeric: tabular-nums;
+}
+
+/* Crop controls */
+.cinema-crop-resolution {
+	gap: 6px !important;
+}
+
+.cinema-crop-input {
+	width: 72px !important;
+	max-width: 72px;
+	padding: 4px 6px !important;
+	font-size: 12px !important;
+	background: rgba(255, 255, 255, 0.08) !important;
+	border: 1px solid rgba(255, 255, 255, 0.15) !important;
+	color: var(--text) !important;
+	border-radius: 4px !important;
+	margin: 0 !important;
+	text-align: center;
+	font-variant-numeric: tabular-nums;
+	-moz-appearance: textfield;
+	appearance: textfield;
+}
+
+.cinema-crop-input::-webkit-inner-spin-button,
+.cinema-crop-input::-webkit-outer-spin-button {
+	-webkit-appearance: none;
+	margin: 0;
+}
+
+.cinema-crop-input:focus {
+	border-color: var(--accent) !important;
+	outline: none;
+}
+
+.cinema-crop-x {
+	color: var(--muted);
+	font-size: 13px;
+	user-select: none;
+}
+
+.cinema-crop-reset-btn {
+	background: rgba(255, 255, 255, 0.06);
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	color: var(--muted);
+	border-radius: 4px;
+	padding: 4px 8px;
+	cursor: pointer;
+	font-size: 11px;
+	transition: all var(--dur-hover) var(--ease-hover);
+	margin-left: 2px;
+}
+
+.cinema-crop-reset-btn:hover {
+	background: rgba(255, 255, 255, 0.12);
+	color: var(--text);
+	border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Frame preset buttons */
+.cinema-frame-presets {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+}
+
+.cinema-frame-btn {
+	padding: 6px 12px;
+	font-size: 12px;
+	border-radius: 6px;
+	background: rgba(255, 255, 255, 0.06);
+	color: var(--muted);
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	cursor: pointer;
+	transition: all var(--dur-hover) var(--ease-hover);
+}
+
+.cinema-frame-btn:hover {
+	background: rgba(255, 255, 255, 0.12);
+	color: var(--text);
+}
+
+.cinema-frame-btn.active {
+	background: rgba(56, 150, 243, 0.2);
+	color: var(--primary);
+	border-color: var(--primary);
+	box-shadow: 0 0 8px rgba(56, 150, 243, 0.2);
+}
+
+/* Background image preview */
+.bg-image-preview {
+	margin-top: 10px;
+	border-radius: 6px;
+	overflow: hidden;
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	max-height: 400px;
+}
+
+.bg-image-preview img {
+	width: 100%;
+	height: auto;
+	max-height: 400px;
+	object-fit: contain;
+	display: block;
+	background: #000;
+}
+
+/* Cinema preview — HTML live preview */
+.cinema-preview-container {
+	margin-top: 14px;
+	text-align: center;
+}
+
+.cinema-preview-container h4 {
+	color: var(--accent);
+	font-size: 13px;
+	font-weight: 600;
+	margin-bottom: 10px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 6px;
+}
+
+.cinema-live-preview {
+	position: relative;
+	display: block;
+	width: 100%;
+	overflow: hidden;
+	border-radius: 6px;
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	background: #000;
+	line-height: 0;
+}
+
+.cinema-live-bg {
+	position: absolute;
+	top: 0;
+	left: 0;
+	display: block;
+}
+
+.cinema-live-chatlog {
+	position: absolute;
+	background: transparent !important;
+	background-color: transparent !important;
+	backdrop-filter: none !important;
+	-webkit-backdrop-filter: none !important;
+	pointer-events: none;
+	overflow: visible;
+	text-align: left !important;
+	margin: 0 !important;
+	padding: 0 !important;
+	border-radius: 0 !important;
+	transition: none !important;
+	line-height: 1.2 !important;
+}
+
+.cinema-live-chatlog .generated {
+	line-height: 1.2 !important;
+	margin-bottom: 0 !important;
+	padding-top: 0 !important;
+	padding-bottom: 0 !important;
+}
+
+/* Collapse .clear spacer divs so line spacing matches the original output exactly */
+.cinema-live-chatlog .clear {
+	line-height: 0 !important;
+	height: 0 !important;
+	font-size: 0 !important;
+	margin: 0 !important;
+	padding: 0 !important;
+}
+
+.cinema-live-bar {
+	position: absolute;
+	left: 0;
+	right: 0;
+	background: #000;
+	pointer-events: none;
+	transition: height 0.15s ease, opacity 0.15s ease;
+}
+
+.cinema-live-bar-top {
+	top: 0;
+}
+
+.cinema-live-bar-bottom {
+	bottom: 0;
+}
+
+.cinema-live-vignette {
+	position: absolute;
+	top: 0; left: 0; right: 0; bottom: 0;
+	pointer-events: none;
+	border-radius: inherit;
+}
+
+.cinema-live-border-overlay {
+	position: absolute;
+	top: 0; left: 0; right: 0; bottom: 0;
+	pointer-events: none;
+	border-radius: inherit;
+	box-sizing: border-box;
+}
+
+.cinema-actions {
+	display: flex;
+	gap: 10px;
+	margin-top: 14px;
+	justify-content: center;
+}
+
+.cinema-actions .button {
+	height: auto;
+}
+
+.cinema-actions .button[disabled] {
+	opacity: 0.4;
+	pointer-events: none;
+}
+
+@media screen and (max-width: 639px) {
+	.cinema-frame-presets {
+		flex-wrap: wrap;
+	}
+	.cinema-control label {
+		min-width: 90px;
+		font-size: 11px;
 	}
 }

@@ -431,17 +431,6 @@ function showAutoSaveIndicator() {
   }, 2000);
 }
 
-/**
- * Toggles the black background on the output display
- * @returns {void}
- */
-function toggleBackground() {
-  $("#output").toggleClass("background-active");
-  if (typeof processOutput === 'function') {
-    processOutput();
-  }
-}
-
 function autoResizeTextarea() {
   this.style.height = 'auto';
   this.style.height = (this.scrollHeight) + 'px';
@@ -930,7 +919,6 @@ $(document).ready(function() {
   });
 
   $("#downloadOutputTransparent").click(downloadOutputImage);
-  $("#toggleBackground").click(toggleBackground);
   
   // Error report button - Auto-sends to Discord/Email
   $("#copyErrorReport").click(function() {

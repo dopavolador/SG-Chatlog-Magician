@@ -222,8 +222,13 @@ html::-webkit-scrollbar {
 }
 
 .button:focus {
+  background-color: var(--button-bg);
   outline: 2px solid var(--text-color);
   outline-offset: 2px;
+}
+
+.button.active:focus {
+  background-color: #1779ba;
 }
 
 .input-group {

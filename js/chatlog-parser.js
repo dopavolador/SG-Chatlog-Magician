@@ -43,8 +43,8 @@ $(document).ready(function() {
 
     function toggleCharacterNameColoring() {
         disableCharacterNameColoring = !disableCharacterNameColoring;
-        $toggleCharacterNameColoringBtn.toggleClass("active", !disableCharacterNameColoring);
-        processOutput();
+        $toggleCharacterNameColoringBtn.toggleClass("active", disableCharacterNameColoring);
+        $output.toggleClass("no-name-coloring", disableCharacterNameColoring);
     }
 
     function applyFilter() {
@@ -93,8 +93,8 @@ $(document).ready(function() {
     const SPEECH_LINE_PATTERN = /^(.+?)\s+(?:dice|grita|susurra)(?:\s+a\s+(.+?))?\s*:/;
 
     function formatSaysLine(line, currentCharacterName) {
-        if (!currentCharacterName || disableCharacterNameColoring) {
-            return wrapSpan("white", line);
+        if (!currentCharacterName) {
+            return formatWithInlineActions(line, "white");
         }
 
         const match = line.match(SPEECH_LINE_PATTERN);
@@ -112,7 +112,36 @@ $(document).ready(function() {
             mainColor = (speakerName === currentCharacterName.toLowerCase()) ? "white" : "lightgrey";
         }
 
-        return wrapSpan(mainColor, line);
+        return formatWithInlineActions(line, mainColor);
+    }
+
+    function formatWithInlineActions(line, dialogueColor) {
+        // Match inline actions enclosed in:
+        // —...— (em dashes)
+        // *...* (asterisks)
+        // -...- (hyphens, requiring at least one space inside to avoid compound words)
+        const actionRegex = /(—[^—]+—|\*[^*]+\*|-[^-]*\s[^-]*-)/g;
+
+        let result = '';
+        let lastIndex = 0;
+        let match;
+
+        while ((match = actionRegex.exec(line)) !== null) {
+            // Add the dialogue part before this action
+            if (match.index > lastIndex) {
+                result += wrapSpan(dialogueColor, line.slice(lastIndex, match.index));
+            }
+            // Add the action part with "me" color
+            result += wrapSpan("me", match[0]);
+            lastIndex = actionRegex.lastIndex;
+        }
+
+        // Add remaining dialogue text
+        if (lastIndex < line.length) {
+            result += wrapSpan(dialogueColor, line.slice(lastIndex));
+        }
+
+        return result;
     }
 
     function replaceDashes(text) {
@@ -139,6 +168,7 @@ $(document).ready(function() {
         const chatText = $textarea.val();
         const chatLines = chatText.split("\n")
                                   .map(removeTimestamps)
+                                  .map(removeHexColorCodes)
                                   .map(replaceDashes)
                                   .map(replaceCurlyApostrophes);
 
@@ -332,6 +362,10 @@ $(document).ready(function() {
         return line.replace(/\[\d{2}:\d{2}:\d{2}\] /g, "").trim();
     }
 
+    function removeHexColorCodes(line) {
+        return line.replace(/\{\/?[A-Fa-f0-9]{6}\}/g, '');
+    }
+
     function formatLineWithFilter(line) {
         // Strip censorship markers for formatting logic
         const cleanLine = line.replace(/÷(.*?)÷/g, '$1');
@@ -385,7 +419,7 @@ $(document).ready(function() {
     }
 
     function formatLine(line) {
-        return replaceColorCodes(line);
+        return formatWithInlineActions(line, "white");
     }
 
     function formatJailTime(line) {
